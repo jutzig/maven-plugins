@@ -172,6 +172,15 @@ public class EclipseToMavenMojo
 
 
     /**
+     * If set to <code>false</code> (default) the plugin will fail if at least one artifact cannot be deployed (for example because the remote repository does
+     * not allow to redeploy artifacts). It set to <code>true</code> it will skip the artifact that could not be deployed and try with the remaining.
+     *
+     * @parameter expression="${ignoreDeployError}" default-value="false"
+     */
+    private boolean ignoreDeployError;
+
+
+    /**
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     public void execute()
@@ -588,8 +597,13 @@ public class EclipseToMavenMojo
         }
         catch (ArtifactDeploymentException e)
         {
-            throw new MojoExecutionException(
-                Messages.getString( "EclipseToMavenMojo.errordeployartifacttorepository" ), e ); //$NON-NLS-1$
+            if(!ignoreDeployError)
+            {
+                throw new MojoExecutionException(
+                                                 Messages.getString( "EclipseToMavenMojo.errordeployartifacttorepository" ), e ); //$NON-NLS-1$
+
+            }
+            getLog().warn(e.getMessage());
         }
         catch (ArtifactInstallationException e)
         {
