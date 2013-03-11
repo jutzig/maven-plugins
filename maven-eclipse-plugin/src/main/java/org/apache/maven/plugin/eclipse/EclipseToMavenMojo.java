@@ -56,6 +56,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -238,6 +239,10 @@ public class EclipseToMavenMojo
                                              new Object[]{Integer.valueOf(i++),
                                                           Integer.valueOf(plugins.keySet().size())})); //$NON-NLS-1$
             String key = (String)it.next();
+            if(!key.contains(":"))
+            {   getLog().info(MessageFormat.format("Skipping version-less placeholder {0}",key)); //$NON-NLS-1$
+                continue;
+            }
             EclipseOsgiPlugin plugin = (EclipseOsgiPlugin)plugins.get(key);
             Model model = (Model)models.get(key);
             writeArtifact(plugin, model, remoteRepo, (EclipseOsgiPlugin)sources.get(getKey(model)));
